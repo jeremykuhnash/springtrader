@@ -150,6 +150,36 @@
 		</bean>
 	</beans>
 
+	<beans profile="sqlserver">
+		<util:properties id="dbPropertiesBean">
+			<prop key="use_scrollable_resultset">false</prop>
+			<prop key="dialect">org.hibernate.dialect.SQLServerDialect</prop>
+			<prop key="hb2ddl.auto">validate</prop>
+		</util:properties>
+
+		<bean class="org.apache.commons.dbcp.BasicDataSource"
+			destroy-method="close" id="dataSource">
+			<property name="driverClassName" value="${sqlserver.database.driverClassName}" />
+			<property name="url" value="${sqlserver.database.url}" />
+			<property name="username" value="${database.username}" />
+			<property name="password" value="${database.password}" />
+			<property name="testOnBorrow" value="true" />
+			<property name="testOnReturn" value="true" />
+			<property name="testWhileIdle" value="true" />
+			<property name="timeBetweenEvictionRunsMillis" value="1800000" />
+			<property name="numTestsPerEvictionRun" value="3" />
+			<property name="minEvictableIdleTimeMillis" value="1800000" />
+
+			<!-- Default isolation level for SQLfire is NONE. Default isolation level 
+				for vPostgres is TRANSACTION_READ_COMMITTED Constant value documentation: 
+				http://docs.oracle.com/javase/6/docs/api/constant-values.html Override the 
+				default isolation level to ensure consistent unit test behavior across data 
+				stores. Examples: NONE = 0 TRANSACTION_READ_UNCOMMITTED = 1 TRANSACTION_READ_COMMITTED 
+				= 2 -->
+			<property name="defaultTransactionIsolation" value="2" />
+			<!-- <property name="validationQuery" value="SELECT version();"/> -->
+		</bean>
+	</beans>
 
 	<beans profile="jndi">
 		<util:properties id="dbPropertiesBean">
@@ -164,6 +194,15 @@
         <util:properties id="dbPropertiesBean">
             <prop key="use_scrollable_resultset">true</prop>
             <prop key="dialect">org.hibernate.dialect.PostgreSQLDialect</prop>
+            <prop key="hb2ddl.auto">validate</prop>
+        </util:properties>
+        <jee:jndi-lookup id="dataSource"  jndi-name="jdbc/nanodb" />
+    </beans>
+
+    <beans profile="jndiSqlServer">
+        <util:properties id="dbPropertiesBean">
+            <prop key="use_scrollable_resultset">true</prop>
+            <prop key="dialect">org.hibernate.dialect.SQLServerDialect</prop>
             <prop key="hb2ddl.auto">validate</prop>
         </util:properties>
         <jee:jndi-lookup id="dataSource"  jndi-name="jdbc/nanodb" />
